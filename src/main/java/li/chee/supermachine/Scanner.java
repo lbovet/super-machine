@@ -16,10 +16,14 @@ public class Scanner<T> {
         this.stream = stream;
     }
 
-    public <X> Scanner<X> find(Class<X> clazz) {
+    public <X> Scanner<X> walk(Class<X> clazz) {
         @SuppressWarnings("unchecked")
-        Stream<X> filteredStream = (Stream<X>)stream.filter(x -> clazz.isAssignableFrom(x.getClass()));
+        Stream<X> filteredStream = (Stream<X>) stream.filter(x -> clazz.isAssignableFrom(x.getClass()));
         return create(filteredStream);
+    }
+
+    public <X> Scanner<X> find(Class<X> clazz) {
+        return walk(clazz);
     }
 
     public <X> Scanner<X> extract(Function<T, X> extractor) {

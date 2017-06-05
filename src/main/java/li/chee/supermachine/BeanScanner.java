@@ -21,17 +21,22 @@ public class BeanScanner<T> extends Scanner<T> {
     }
 
     @Override
+    public <X> Scanner<X> walk(Class<X> clazz) {
+        return new BeanScanner<>(stream().flatMap(x -> traverse(x, null))).superFind(clazz);
+    }
+
+    @Override
     public <X> Scanner<X> find(Class<X> clazz) {
-        return new BeanScanner<>(stream().flatMap(this::traverse)).superFind(clazz);
+        return new BeanScanner<>(stream().flatMap(x -> traverse(x, clazz))).superFind(clazz);
     }
 
     private <X> Scanner<X> superFind(Class<X> clazz) {
-        return super.find(clazz);
+        return super.walk(clazz);
     }
 
-    private Stream<?> traverse(T root) {
+    private <X> Stream<?> traverse(T root, Class<X> stopClass) {
         LinkedList<Object> list = new LinkedList<>();
-        Traverser.traverse(root, list::add);
+        Traverser.traverse(root, null, stopClass, list::add);
         return list.stream();
     }
 }

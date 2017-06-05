@@ -18,7 +18,7 @@ from(invoice).
 
 _Returns the name of employees and city name of the offices of non-Apple vendors that sells hardware article on this invoice._
 
-`find` traverses the object graph to find all occurences in properties, maps and collections. In the example above, the structure could be:
+`walk` traverses the object graph to find all occurences in properties, maps and collections. In the example above, the structure could be:
 
 ```
 Invoice

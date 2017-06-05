@@ -49,7 +49,7 @@ public class Traverser
      */
     public static void traverse(Object o, Visitor visitor)
     {
-        traverse(o, null, visitor);
+        traverse(o, visitor);
     }
 
     /**
@@ -58,10 +58,10 @@ public class Traverser
      * @param visitor Visitor is called for every object encountered during
      * the Java object graph traverser.
      */
-    public static void traverse(Object o, Class[] skip, Visitor visitor)
+    public static void traverse(Object o, Class[] skip, Class stopClass, Visitor visitor)
     {
         Traverser traverse = new Traverser();
-        traverse.walk(o, skip, visitor);
+        traverse.walk(o, skip, stopClass, visitor);
         traverse._objVisited.clear();
         traverse._classCache.clear();
     }
@@ -71,7 +71,7 @@ public class Traverser
      * @param root Any Java object.
      * @param skip Set of classes to skip (ignore).  Allowed to be null.
      */
-    public void walk(Object root, Class[] skip, Visitor visitor)
+    private void walk(Object root, Class[] skip, Class stopClass, Visitor visitor)
     {
         Deque stack = new LinkedList();
         stack.add(root);
@@ -95,40 +95,30 @@ public class Traverser
             _objVisited.put(current, null);
             visitor.process(current);
 
-            if (clazz.isArray())
-            {
-                int len = Array.getLength(current);
-                Class compType = clazz.getComponentType();
+            if(stopClass == null || clazz != stopClass) {
+                if (clazz.isArray()) {
+                    int len = Array.getLength(current);
+                    Class compType = clazz.getComponentType();
 
-                if (!compType.isPrimitive())
-                {   // Speed up: do not walk primitives
-                    ClassInfo info = getClassInfo(compType, skip);
-                    if (!info._skip)
-                    {   // Do not walk array elements of a class type that is to be skipped.
-                        for (int i=0; i < len; i++)
-                        {
-                            Object element = Array.get(current, i);
-                            if (element != null)
-                            {   // Skip processing null array elements
-                                stack.add(Array.get(current, i));
+                    if (!compType.isPrimitive()) {   // Speed up: do not walk primitives
+                        ClassInfo info = getClassInfo(compType, skip);
+                        if (!info._skip) {   // Do not walk array elements of a class type that is to be skipped.
+                            for (int i = 0; i < len; i++) {
+                                Object element = Array.get(current, i);
+                                if (element != null) {   // Skip processing null array elements
+                                    stack.add(Array.get(current, i));
+                                }
                             }
                         }
                     }
-                }
-            }
-            else
-            {   // Process fields of an object instance
-                if (current instanceof Collection)
-                {
-                    walkCollection(stack, (Collection) current);
-                }
-                else if (current instanceof Map)
-                {
-                    walkMap(stack, (Map) current);
-                }
-                else
-                {
-                    walkFields(stack, current, skip);
+                } else {   // Process fields of an object instance
+                    if (current instanceof Collection) {
+                        walkCollection(stack, (Collection) current);
+                    } else if (current instanceof Map) {
+                        walkMap(stack, (Map) current);
+                    } else {
+                        walkFields(stack, current, skip);
+                    }
                 }
             }
         }
@@ -195,7 +185,7 @@ public class Traverser
      * This class wraps a class in order to cache the fields so they
      * are only reflectively obtained once.
      */
-    public static class ClassInfo
+    private static class ClassInfo
     {
         private boolean _skip = false;
         private final Collection<Field> _refFields = new ArrayList<>();

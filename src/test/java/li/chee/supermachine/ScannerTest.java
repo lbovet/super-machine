@@ -127,8 +127,6 @@ public class ScannerTest {
                         .filter(d -> !d.getBoss().getName().equals("Bill"))
                         .find(Person.class)
                         .filter(p -> from(p).find(City.class).extract(City::getMayor).stream().anyMatch(m -> m.getName().equals("Rudi")))
-                        // avoid that the mayor appears (will be possible in future version)
-                        .filter(p -> from(p).find(City.class).extract(City::getMayor).stream().noneMatch(p::equals))
                         .then(e -> e.extract(Person::getName),
                                 e -> e.extract(p -> p.getAddresses()[0]).extract(Address::getStreet))
                         .stream()
