@@ -23,9 +23,11 @@ public class Scanner<T> {
     }
 
     public <X> Scanner<X> extract(Function<T, X> extractor) {
-        return create(stream.map(extractor));
+        return create(stream.flatMap(x -> {
+            X result = extractor.apply(x);
+            return result != null ? Stream.of(result) : Stream.empty();
+        }));
     }
-
 
     public Scanner<T> filter(Predicate<T> predicate) {
         return create(stream.filter(predicate));
