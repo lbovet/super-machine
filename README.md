@@ -7,7 +7,7 @@ What about:
 from(invoice).
   .find(Article.class)
   .filter(article -> article.getType().equals("hardware")
-  .extract(Article::Vendor)
+  .extract(Article::getVendor)
   .filter(vendor -> !vendor.getName().equals("Apple")
   .find(Office.class)
   .then( 
