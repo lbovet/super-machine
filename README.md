@@ -1,5 +1,6 @@
 # super-machine
 Query Java object graphs in a typed and streamed fashion
+
 [![Build Status](https://travis-ci.org/lbovet/super-machine.svg?branch=master)](https://travis-ci.org/lbovet/super-machine)
 <p align='right'>A <a href="http://www.swisspush.org">swisspush</a> project <a href="http://www.swisspush.org" border=0><img align="top"  src='https://1.gravatar.com/avatar/cf7292487846085732baf808def5685a?s=32'></a></p>
 
