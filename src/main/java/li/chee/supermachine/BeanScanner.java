@@ -58,7 +58,7 @@ public class BeanScanner<T> extends Scanner<T> {
         return super.walk(clazz);
     }
 
-    private <X> Stream<?> traverse(T root, Class<X> stopClass) {
+    private <X> Stream<Object> traverse(T root, Class<X> stopClass) {
         LinkedList<Object> list = new LinkedList<>();
         Traverser.traverse(root, null, stopClass, list::add);
         return list.stream();
